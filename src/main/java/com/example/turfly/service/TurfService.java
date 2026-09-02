@@ -9,6 +9,8 @@ import com.example.turfly.repository.UserRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -67,7 +69,11 @@ public class TurfService {
 
         turfRepository.delete(turf);
     }
-
+    @Transactional(readOnly = true)
+    public Page<TurfResponse> getAllTurfsPaged(Pageable pageable) {
+        return turfRepository.findAll(pageable)
+                .map(this::toResponse);
+    }
     private TurfResponse toResponse(Turf turf) {
         return new TurfResponse(
                 turf.getId(),

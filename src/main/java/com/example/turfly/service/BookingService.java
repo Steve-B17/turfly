@@ -39,6 +39,13 @@ public class BookingService {
         if (hours <= 0) {
             throw new IllegalArgumentException("End time must be after start time");
         }
+
+        boolean overlaps = bookingRepository.existsOverlappingBooking(
+                turf.getId(), request.getDate(), request.getStartTime(), request.getEndTime());
+        if (overlaps) {
+            throw new IllegalStateException("This slot is already booked or pending approval");
+        }
+
         double amount = hours * turf.getPrice();
 
         Booking booking = new Booking();

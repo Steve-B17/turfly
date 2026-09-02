@@ -8,6 +8,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+
 
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
@@ -19,6 +21,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex,
                                                                HttpServletRequest request) {
         return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponse> handleOptimisticLock(ObjectOptimisticLockingFailureException ex,
+                                                              HttpServletRequest request) {
+        return buildResponse(HttpStatus.CONFLICT, "This booking was just modified by someone else. Please refresh and try again.", request);
     }
 
     @ExceptionHandler(IllegalStateException.class)
